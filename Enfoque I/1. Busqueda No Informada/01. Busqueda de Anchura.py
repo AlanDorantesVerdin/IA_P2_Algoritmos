@@ -1,110 +1,62 @@
-"""
-Alan Dorantes Verdin
+# Algoritmo 01. Búsqueda en Anchura
+# Alan Dorantes Verdin
 
-Algoritmo 1: Búsqueda en Anchura 
+from collections import deque # Usamos deque para una cola eficiente
 
-Descripción:
-La Búsqueda en Anchura es un algoritmo de recorrido de grafos. Comienza en un nodo
-raíz (o un nodo de inicio arbitrario) y explora todos los nodos vecinos a la
-profundidad actual antes de moverse a los nodos del siguiente nivel de profundidad.
-
-Características Principales:
-1.  Usa una cola (Queue) para gestionar los nodos pendientes de visitar.
-    Esto sigue una política FIFO (First-In, First-Out).
-2.  Es un algoritmo "completo": si existe una solución (un camino al nodo objetivo),
-    BFS la encontrará.
-3.  Es "óptimo" si los costos de los caminos son uniformes (por ejemplo, cada
-    arista vale 1). Encontrará el camino más corto en términos del número
-    de aristas.
-4.  Complejidad Temporal: O(V + E), donde V es el número de vértices (nodos)
-    y E es el número de aristas (conexiones).
-5.  Complejidad Espacial: O(V), ya que en el peor de los casos, la cola
-    podría almacenar todos los vértices.
-
-"""
-
-from collections import deque
-
-def busqueda_en_anchura(grafo, nodo_inicial, nodo_objetivo):
+def busqueda_anchura(grafo, inicio, objetivo):
     """
-    Implementación de la Búsqueda en Anchura (BFS).
-
-    Argumentos:
-    - grafo (dict): Una representación del grafo usando una lista de adyacencia.
-                    Es un diccionario donde cada clave es un nodo y su valor
-                    es una lista de nodos vecinos.
-    - nodo_inicial (str/int): El nodo desde el cual comenzará la búsqueda.
-    - nodo_objetivo (str/int): El nodo que queremos encontrar.
-
-    Retorna:
-    - list: El camino desde el nodo inicial al nodo objetivo, o None si no existe.
+    Encuentra el camino más corto (en nodos) de 'inicio' a 'objetivo' usando BFS.
     """
+    # 1. Cola para nodos por visitar
+    cola = deque([inicio])
     
-    print(f"Iniciando Búsqueda en Anchura (BFS) desde el nodo: {nodo_inicial}")
-    print(f"Buscando el nodo objetivo: {nodo_objetivo}\n")
+    # 2. Conjunto de nodos ya visitados (para evitar ciclos)
+    visitados = {inicio}
+    
+    # 3. Diccionario para reconstruir el camino
+    # guarda: {nodo: nodo_padre}
+    padres = {inicio: None}
 
-    # Conjunto para llevar un registro de los nodos visitados
-    visitados = set()
+    print(f"Iniciando BFS desde {inicio}...")
 
-    # Cola que almacena tuplas: (nodo_actual, camino_hasta_ese_nodo)
-    cola = deque([(nodo_inicial, [nodo_inicial])])
-
-    # Marcamos el nodo inicial como visitado
-    visitados.add(nodo_inicial)
-
-    # Bucle principal
     while cola:
-        
-        # Sacamos el primer elemento de la cola
-        nodo_actual, camino = cola.popleft()
-        print(f"Visitando nodo: {nodo_actual} | Camino actual: {' -> '.join(camino)}")
+        # 4. Sacar el primer nodo de la cola
+        nodo_actual = cola.popleft()
+        print(f"Visitando: {nodo_actual}")
 
-        # Comprobamos si hemos llegado al nodo objetivo
-        if nodo_actual == nodo_objetivo:
-            print(f"\n¡Nodo objetivo '{nodo_objetivo}' encontrado!")
-            print(f"Camino encontrado: {' -> '.join(camino)}")
-            print(f"Longitud del camino: {len(camino) - 1} aristas")
-            return camino
-
-        # Exploramos los vecinos del nodo actual
-        for vecino in grafo.get(nodo_actual, []):
+        # 5. Objetivo encontrado
+        if nodo_actual == objetivo:
+            print(f"¡Objetivo {objetivo} encontrado!")
             
-            # Si el vecino no ha sido visitado...
-            if vecino not in visitados:
-                
-                # Lo marcamos como visitado
-                visitados.add(vecino)
-                
-                # Creamos un nuevo camino que incluye al vecino
-                nuevo_camino = camino + [vecino]
-                
-                # Lo añadimos a la cola
-                cola.append((vecino, nuevo_camino))
-                print(f"  -> Encolando vecino: {vecino}")
+            # Reconstruir camino
+            camino = []
+            while nodo_actual is not None:
+                camino.append(nodo_actual)
+                nodo_actual = padres[nodo_actual]
+            return camino[::-1] # Devolver el camino invertido (inicio -> fin)
 
-    print(f"\nNo se encontró un camino al nodo objetivo '{nodo_objetivo}'.")
+        # 6. Explorar vecinos
+        for vecino in grafo.get(nodo_actual, []):
+            if vecino not in visitados:
+                visitados.add(vecino)      # Marcar como visitado
+                padres[vecino] = nodo_actual # Guardar el padre
+                cola.append(vecino)        # Añadir a la cola
+
+    print(f"Objetivo {objetivo} no alcanzable.")
     return None
 
-# --- Ejemplo de Uso ---
-if __name__ == "__main__":
-    
-    # Definimos un grafo de ejemplo usando un diccionario (lista de adyacencia)
-    # A --- B --- E
-    # |     |   / |
-    # |     |  /  |
-    # C --- D     F
-    
-    mi_grafo = {
-        'A': ['B', 'C'],
-        'B': ['A', 'D', 'E'],
-        'C': ['A', 'D'],
-        'D': ['B', 'C', 'E'],
-        'E': ['B', 'D', 'F'],
-        'F': ['E']
-    }
+# Ejemplo de grafo no ponderado representado como un diccionario
+grafo_no_ponderado = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E'],
+    'G': [] # Un nodo aislado
+}
 
-    # Llamamos a la función comenzando desde el nodo 'A' y buscando el nodo 'F'
-    camino_encontrado = busqueda_en_anchura(mi_grafo, 'A', 'F')
-    
-    if camino_encontrado:
-        print(f"\nResumen: El camino más corto de A a F es: {camino_encontrado}")
+# Ejemplo de uso
+print("\n--- 1. Búsqueda en Anchura (BFS) ---")
+camino_bfs = busqueda_anchura(grafo_no_ponderado, 'A', 'F')
+print(f"Camino encontrado: {camino_bfs}\n")
