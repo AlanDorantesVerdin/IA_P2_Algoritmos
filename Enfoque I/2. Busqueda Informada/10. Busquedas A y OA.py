@@ -1,4 +1,5 @@
-
+# Algoritmo 10. Búsqueda A*
+# Alan Dorantes Verdin
 
 import heapq
 
@@ -65,7 +66,33 @@ def busqueda_a_estrella(grafo, inicio, objetivo, h):
     print(f"Objetivo {objetivo} no alcanzable.")
     return None
 
+# Ejemplo de un grafo ponderado
+grafo_ponderado = {
+    'A': [('B', 4), ('C', 2)],
+    'B': [('A', 4), ('D', 5)],
+    'C': [('A', 2), ('F', 10)],
+    'D': [('B', 5), ('E', 3)],
+    'E': [('D', 3), ('F', 4)],
+    'F': [('C', 10), ('E', 4)]
+}
+
+# Función heurística: estima la distancia desde cada nodo al objetivo F
+def h(nodo):
+    """
+    Heurística que estima la distancia de cada nodo al objetivo F.
+    Valores más bajos indican mayor cercanía al objetivo.
+    """
+    heuristicas = {
+        'A': 7,  
+        'B': 6,
+        'C': 5,
+        'D': 4,
+        'E': 2,
+        'F': 0
+    }
+    return heuristicas.get(nodo, float('inf'))
+
 # Ejemplo de uso
-print("--- 10. Búsqueda A* ---")
+print("\n--- 10. Búsqueda A* ---")
 camino_a_estrella = busqueda_a_estrella(grafo_ponderado, 'A', 'F', h)
 print(f"Camino encontrado: {camino_a_estrella}\n")
