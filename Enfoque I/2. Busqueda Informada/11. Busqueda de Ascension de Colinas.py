@@ -22,7 +22,7 @@ def get_vecino_aleatorio(estado):
     lista_estado[indice] = nuevo_bit
     return "".join(lista_estado)
 
-print(f"--- Configuración para Búsqueda Local (Problema One-Max, Long={LONGITUD_ESTADO}) ---")
+print(f"\n--- Configuración para Búsqueda Local (Problema One-Max, Long={LONGITUD_ESTADO}) ---")
 estado_test = crear_estado_aleatorio()
 print(f"Estado de prueba: {estado_test}, Fitness: {fitness(estado_test)}")
 print(f"Vecino aleatorio: {get_vecino_aleatorio(estado_test)}\n")
