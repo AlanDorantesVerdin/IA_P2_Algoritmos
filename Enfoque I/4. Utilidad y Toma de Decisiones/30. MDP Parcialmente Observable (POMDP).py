@@ -1,7 +1,7 @@
 # Algoritmo 30. MDP Parcialmente Observable (POMDP)
 # Alan Dorantes Verdin
 
-import numpy as np
+import numpy as np # type: ignore
 
 # 1. Definición del POMDP
 estados = [0, 1, 2]
